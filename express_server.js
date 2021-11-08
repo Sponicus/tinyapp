@@ -31,3 +31,9 @@ app.get("/urls.json", (req, res) => {
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
+
+//Pass urlDatabase to template
+app.get('/urls', (req, res) => {
+  templateVariables =   { urls: urlDatabase };
+  res.render("urls_index", templateVariables)
+});
