@@ -2,6 +2,8 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
+const bodyParser = require("body-parser");//add body parser so it is readable for humans
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.set("view engine", "ejs"); //  Set ejs as the view engine
 
@@ -20,7 +22,10 @@ app.listen(PORT, () => {
 });
 
 ////////////////////////////////
-
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // Log the POST request body to the console
+  res.send("Ok");         
+});
 
 // Get JSON string
 app.get("/urls.json", (req, res) => {
@@ -36,6 +41,11 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVariables =   { urls: urlDatabase };
   res.render("urls_index", templateVariables);
+});
+
+// Render new template
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
 });
 
 // Render info about single URL
