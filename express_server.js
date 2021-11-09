@@ -27,8 +27,7 @@ app.post("/urls", (req, res) => {
   console.log(req.body.longURL);  // Log the POST request body to the console
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
-  // res.send("Ok");  
-  res.redirect("/urls");       
+  res.redirect(`/urls/${shortURL}`);       
 });
 
 // Get JSON string
