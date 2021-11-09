@@ -56,5 +56,13 @@ app.get("/urls/:shortURL", (req, res) => {
 
 
 function generateRandomString() {
-
+  let randomString = ';'
+  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghejklmnopqrstuvwxyz1234567890';
+  //// result 6 random characters. 
+  for (let i = 0; i < 6; i++) {
+    randomString += characters.charAt(Math.floor(Math.random()*characters.length));
+  }
+  return randomString;
 };
+
+// console.log(generateRandomString());
