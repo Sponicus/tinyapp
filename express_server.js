@@ -22,9 +22,13 @@ app.listen(PORT, () => {
 });
 
 ////////////////////////////////
+// Post route for submission form
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         
+  console.log(req.body.longURL);  // Log the POST request body to the console
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
+  // res.send("Ok");  
+  res.redirect("/urls");       
 });
 
 // Get JSON string
@@ -56,7 +60,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 
 function generateRandomString() {
-  let randomString = ';'
+  let randomString = '';
   let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghejklmnopqrstuvwxyz1234567890';
   //// result 6 random characters. 
   for (let i = 0; i < 6; i++) {
