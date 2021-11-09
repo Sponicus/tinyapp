@@ -37,3 +37,9 @@ app.get('/urls', (req, res) => {
   templateVariables =   { urls: urlDatabase };
   res.render("urls_index", templateVariables)
 });
+
+// Render info about single URL
+app.get('urls/:shortURL', (req,res) => {
+  templateVariables = { shortURL: req.params.shortURL, longURL: req.params.longURL };
+  res.render("urls_show.ejs", templateVars);
+});
