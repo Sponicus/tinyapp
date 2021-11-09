@@ -24,7 +24,7 @@ app.listen(PORT, () => {
 ////////////////////////////////
 // Post route for submission form
 app.post("/urls", (req, res) => {
-  console.log(req.body.longURL);  // Log the POST request body to the console
+  // console.log(req.body.longURL);  // Log the POST request body to the console
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);       
@@ -53,7 +53,12 @@ app.get("/urls/new", (req, res) => {
 
 // Render info about single URL
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVariables = { shortURL: req.params.shortURL, longURL: req.params.longURL };
+console.log(req.params.shortURL);
+  const templateVariables = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL] //req.params.longURL 
+  };
+  console.log(templateVariables.longURL);
   res.render("urls_show", templateVariables);
 });
 
