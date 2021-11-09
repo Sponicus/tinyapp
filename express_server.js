@@ -53,3 +53,8 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVariables = { shortURL: req.params.shortURL, longURL: req.params.longURL };
   res.render("urls_show", templateVariables);
 });
+
+
+function generateRandomString() {
+
+}
