@@ -24,10 +24,15 @@ app.listen(PORT, () => {
 ////////////////////////////////
 // Post route for submission form
 app.post("/urls", (req, res) => {
-  // console.log(req.body.longURL);  // Log the POST request body to the console
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);       
+});
+
+// redirect POST for shortURL to longURL
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(`${longURL}`);
 });
 
 // Get JSON string
@@ -53,12 +58,10 @@ app.get("/urls/new", (req, res) => {
 
 // Render info about single URL
 app.get("/urls/:shortURL", (req, res) => {
-console.log(req.params.shortURL);
   const templateVariables = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL] //req.params.longURL 
+    longURL: urlDatabase[req.params.shortURL]
   };
-  console.log(templateVariables.longURL);
   res.render("urls_show", templateVariables);
 });
 
@@ -72,5 +75,3 @@ function generateRandomString() {
   }
   return randomString;
 };
-
-// console.log(generateRandomString());
