@@ -73,24 +73,14 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
-// UPDATE URLS send to URL SHOW
-app.post("/urls/:shortURL/update", (req, res) => {
-  const templateVariables = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]
-  };
-  res.render("urls_show", templateVariables);
-});
 
-// Recieve updated URL
-app.get("/urls/:shortURL/update", (req, res) => {
-  console.log(req.params.shortURL);
-  const templateVariables = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]
-  };
-  
-  res.redirect("/urls");
+// make the changes to the edit on show url page
+app.post("/u/:shortURL/", (req, res) => {
+  const shortURL = req.params.shortURL;
+  const longURL = req.body.longURL;
+  urlDatabase[shortURL] = longURL;
+  console.log(urlDatabase[shortURL]);
+  res.redirect("/urls")
 });
 
 function generateRandomString() {
