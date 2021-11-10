@@ -65,6 +65,10 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVariables);
 });
 
+// // DELETE URLS from database
+// app.delete("/urls/:shortURL/delete", (req, res) => {
+//   delete urlDatabase[req.params.shortURL];
+// });
 
 function generateRandomString() {
   let randomString = '';
