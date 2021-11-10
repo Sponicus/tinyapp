@@ -61,7 +61,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVariables = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
-  };
+  }
   res.render("urls_show", templateVariables);
 });
 
@@ -70,6 +70,26 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   console.log(urlDatabase[req.params.shortURL]);
   // console.log(urlDatabase.params);
   delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
+});
+
+// UPDATE URLS send to URL SHOW
+app.post("/urls/:shortURL/update", (req, res) => {
+  const templateVariables = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL]
+  };
+  res.render("urls_show", templateVariables);
+});
+
+// Recieve updated URL
+app.get("/urls/:shortURL/update", (req, res) => {
+  console.log(req.params.shortURL);
+  const templateVariables = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL]
+  };
+  
   res.redirect("/urls");
 });
 
