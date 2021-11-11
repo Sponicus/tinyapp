@@ -102,14 +102,34 @@ app.post("/u/:shortURL/", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
-  console.log(urlDatabase[shortURL]);
   res.redirect("/urls")
+});
+
+/////////might not need/////
+//render login page
+app.get("/login", (req, res) => {
+  const userID = req.cookies["user_id"]
+  const templateVariables = {
+    user: null //users[req.cookies["user_id"]] 
+  }
+  res.render("urls_login", templateVariables );
 });
 
 // endpoint for /login
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  res.redirect("/urls");
+  const email = req.body.email;
+  const password = req.body.password
+  //check email and passwords in database
+  if (emailLookUp(email) && passwordLookUp(password)) {
+    res.cookie('user_id', userLookUp(email,password));
+    //if not go register
+  } else if (!emailLookUp(email)) {
+    res.redirect("/register");
+    // report error for missing password or anything else!
+  } else {
+    res.status(400).send('an error has occured!');
+  }
+  res.redirect("urls");
 });
 
 // endpoint for /logout
@@ -157,6 +177,30 @@ const emailLookUp = (inputEmail) => {
     }
   }
 };
+
+const passwordLookUp = (inputPassword) => {
+  for (let key in users) {
+    if (inputPassword === users[key].password){
+      return true;
+    }
+  }
+};
+
+const userLookUp = (emailLookUp,passwordLookUp) => {
+  return Object.keys(users).find((user) => {
+    if(users[user].email != emailLookUp || users[user].password != passwordLookUp) {
+      return false;
+    } else {
+      return true;
+    }
+  })
+};
+
+// console.log(userLookUp("user2@example.com","dishwasher-funk")); 
+
+// function getKeyByValue(object, value) {
+//   return Object.keys(object).find(key => object[key] === value);
+// }
 
 const generateRandomString = () => {
   let randomString = '';
