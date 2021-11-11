@@ -103,6 +103,13 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+// render registration page
+app.get("/register", (req, res) => {
+  const templateVariables = {
+    username: req.cookies["username"]
+  }
+  res.render('urls_register', templateVariables);
+});
 
 function generateRandomString() {
   let randomString = '';
