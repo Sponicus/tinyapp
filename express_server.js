@@ -128,21 +128,37 @@ app.get("/register", (req, res) => {
 
 //Post register endpoint
 app.post("/register", (req, res) => {
-  console.log(req.body)
   const randomID = generateRandomString();
   const id = req.body.username;
   const email = req.body.email;
   const password = req.body.password;
+  // loops through users to check if email is already in use
+  if(emailLookUp(email)) {
+    res.status(400).send('email already in use')
+  };
+  //assigns attributes to the following user
   users[randomID] = {};
   users[randomID]['id'] = randomID;
   users[randomID]["email"] = email;
   users[randomID]["password"] = password;
-  console.log(users)
-  res.cookie('user_id', randomID) ;
-  res.redirect("/urls");
+  // sends status message if any field is left blank
+  if (email === ""||password === "") {
+    res.status(400).send("an error has occured!");
+  } else {
+    res.cookie('user_id', randomID) ;
+    res.redirect("/urls");
+  }
 });
 
-function generateRandomString() {
+const emailLookUp = (inputEmail) => {
+  for (let key in users) {
+    if (inputEmail === users[key].email){
+      return true;
+    }
+  }
+};
+
+const generateRandomString = () => {
   let randomString = '';
   let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghejklmnopqrstuvwxyz1234567890';
   //// result 6 random characters. 
