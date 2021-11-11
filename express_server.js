@@ -98,7 +98,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // make the changes to the edit on show url page
 app.post("/u/:shortURL/", (req, res) => {
-  // const username = req.cookies["username"];
   const shortURL = req.params.shortURL;
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
@@ -149,7 +148,6 @@ app.get("/register", (req, res) => {
 //Post register endpoint
 app.post("/register", (req, res) => {
   const randomID = generateRandomString();
-  const id = req.body.username;
   const email = req.body.email;
   const password = req.body.password;
   // loops through users to check if email is already in use
