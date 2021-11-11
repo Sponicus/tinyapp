@@ -8,14 +8,14 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        <p class="navbar-brand"><%= username %></p>
-        <% if(username === undefined){ %>
+        <% if(user === undefined){ %>
           <form method=POST action="/login">
-            <input type="text" name = "username" placeholder="username">
+            <input type="text" name = "user" placeholder="username">
             <button type="submit" class="btn btn-outline-login">login</button>
           </form>
         <% } else{ %>  
           <form method=POST action="/logout">
+            <p class="navbar-brand"><%= user.email %></p>
             <button type="submit" class="btn btn-outline-logout">logout</button>
           </form>
         <% } %>
