@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');// add.session.user_idieSession = 
 const bcrypt = require('bcryptjs');
 const cookieSession = require("cookie-session");
 const {urlDatabase, emailLookUp, users, generateRandomString, urlsForUser, userLookUp, passwordLookUp} = require("./helper");
-// const password = "purple-monkey-dinosaur"; // found in the req.params object
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.set("view engine", "ejs"); //  Set ejs as the view engine
@@ -16,43 +16,16 @@ app.use(cookieSession({
   keys: ['key1', 'key2']
 }))
 
-/////////////SERVER//////////////
-// const urlDatabase = {
-//   "b6UTxQ": {
-//       longURL: "https://www.tsn.ca",
-//       userID: "aJ48lW"
-//   },
-//   "i3BoGr": {
-//       longURL: "https://www.google.ca",
-//       userID: "aJ48lW"
-//   }
-// };
-
-
+//////remnant from one of the first tasks from compass/////
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
-
+/////////////////////////////////////////////////////////
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-////////////////Object to Store userdata///////////////
 
-// const users = { 
-//   "userRandomID": {
-//     id: "userRandomID", 
-//     email: "user@example.com", 
-//     password: "purple-monkey-dinosaur"
-//   },
-//  "user2RandomID": {
-//     id: "user2RandomID", 
-//     email: "user2@example.com", 
-//     password: "dishwasher-funk"
-//   }
-// };
-
-////////////////////////////////
-// Post route for submission form AKA  create new short URLS
+// create new short URLS
 app.post("/urls", (req, res) => {
   const tempObj = {
     longURL: req.body.longURL,
@@ -207,66 +180,3 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
   }
 });
-
-// const emailLookUp = (inputEmail) => {
-//   for (let key in users) {
-//     if (inputEmail === users[key].email){
-//       return true;
-//     }
-//   }
-// };
-
-
-// const passwordLookUp = (inputPassword) => {
-//   for (let key in users) {
-//     if (inputPassword === users[key].password){
-//       return true;
-//     }
-//   }
-// };
-
-// const getUserByEmail = (email, database) => {
-  
-// };
-
-
-// email look take 2 params. 
-//paswrod takes 2params
-// email && passlookup.
-
-// const userLookUp = (emailLookUp,passwordLookUp) => {
-//   return Object.keys(users).find((user) => {
-//     if(users[user].email != emailLookUp || users[user].password != passwordLookUp) {
-//       return false;
-//     } else {
-//       return true;
-//     }
-//   })
-// };
-
-// const urlsForUser = (id) => {
-//   const tempObj = {};
-//   if (id) {
-//     for (let shortURL in urlDatabase) {
-//       if(urlDatabase[shortURL].userID === id.id) {
-//         tempObj[shortURL] = urlDatabase[shortURL];
-//       }
-//     }
-//   }
-//   return tempObj;
-// };
-
-
-// function getKeyByValue(object, value) {
-//   return Object.keys(object).find(key => object[key] === value);
-// }
-
-// const generateRandomString = () => {
-//   let randomString = '';
-//   let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghejklmnopqrstuvwxyz1234567890';
-//   //// result 6 random characters. 
-//   for (let i = 0; i < 6; i++) {
-//     randomString += characters.charAt(Math.floor(Math.random()*characters.length));
-//   }
-//   return randomString;
-// };

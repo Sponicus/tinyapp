@@ -22,7 +22,7 @@ const users = {
   }
 };
 
-//////////////////////// Look Up functions//////////////////////
+//////////////////////// Functions//////////////////////
 const emailLookUp = (inputEmail, database) => {
   for (let key in database) {
     if (inputEmail === database[key].email){
@@ -39,10 +39,7 @@ const passwordLookUp = (inputPassword, database) => {
     }
   }
 };
-///////////Why is it not working???///////////////////
-/// i think its logic is flawed.
 
-//provide email into data base, recieve 
 const getUserByEmail = (inputEmail, database) => {
   for (let key in database) {
     if (inputEmail === database[key].email){
@@ -61,17 +58,6 @@ const userLookUp = (emailLookUp,passwordLookUp, database) => {
     }
   })
 };
-/////////////////////////////////////////////////////////////////
-// const getUserByEmail = (email, database) => {
-  
-// };
-
-
-// email look take 2 params. 
-//paswrod takes 2params
-// email && passlookup.
-
-
 
 const urlsForUser = (id) => {
   const tempObj = {};
