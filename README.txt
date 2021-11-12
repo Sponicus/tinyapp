@@ -4,9 +4,9 @@ TinyApp is a web application built with Node and Express that allows users to sh
 
 ## Final Product
 
-!["screenshot description"](#)
+!["screenshot of URLS page"](https://github.com/Sponicus/tinyapp/blob/master/docs/TinyAppURLs.png)
 
-!["screenshot description"](#)
+!["screenshot of registration page"](https://github.com/Sponicus/tinyapp/blob/master/docs/TinyAppRegistration.png)
 
 ## Dependencies
 
