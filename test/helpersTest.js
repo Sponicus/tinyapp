@@ -17,17 +17,46 @@ const testUsers = {
 
 describe('getUserByEmail', function() {
   it('should return a user with valid email', function() {
-    const user = getUserByEmail("user@example.com", testUsers)
+    const user = getUserByEmail("user@example.com", testUsers);
     const expectedUserID = "userRandomID";
     assert.equal(user, expectedUserID);
   });
 
   it("should return undefined with an invalid email", () => {
     const user = getUserByEmail("ramdom@example.com", testUsers)
-    console.log(user);
     const expectedUserID = undefined; //"ramdom@example.com";
     assert.equal(user, expectedUserID);
   });
+
+  it ("should return a user with valid email", () => {
+    const user = getUserByEmail("user2@example.com", testUsers);
+    const expectedUserID = "user2RandomID";
+    assert.equal(user, expectedUserID)    
+  });
+
+  it("should return undefined with no user email", () => {
+    const user = getUserByEmail("",testUsers);
+    const expectedUserID = undefined;
+    assert.equal(user, expectedUserID);
+  })
+
+  it("should return undefined with a number", () =>{
+    const user = getUserByEmail(54235, testUsers);
+    const expectedUserID = undefined;
+    assert.equal(user, expectedUserID);
+  })
+
+  it("should return undefined with null", () =>{
+    const user = getUserByEmail(null, testUsers);
+    const expectedUserID = undefined;
+    assert.equal(user, expectedUserID);
+  })
+
+  it("should return undefined with boolean", () =>{
+    const user = getUserByEmail(true, testUsers);
+    const expectedUserID = undefined;
+    assert.equal(user, expectedUserID);
+  })
 });
 
 // console.log(getUserByEmail("ramdom@example.com", testUsers))
