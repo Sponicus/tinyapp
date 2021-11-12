@@ -37,7 +37,7 @@ const users = {
 };
 
 ////////////////////////////////
-// Post route for submission form
+// Post route for submission form AKA  create new short URLS
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
@@ -72,8 +72,13 @@ app.get("/urls", (req, res) => {
 
 // Render new template
 app.get("/urls/new", (req, res) => {
+  const userID = users[req.cookies["user_id"]].id;
   const templateVariables = {
     user: users[req.cookies["user_id"]] 
+  }
+  // if user is not logged in, redirect to login
+  if (isLoggedIn(userID) === false) {
+    res.redirect("/login");
   }
   res.render("urls_new", templateVariables);
 });
@@ -167,6 +172,15 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
   }
 });
+
+const isLoggedIn = (input) => {
+  for (let key in users) {
+    if (input === users[key].id){
+      return true;
+    }
+  }
+  return false
+};
 
 const emailLookUp = (inputEmail) => {
   for (let key in users) {
