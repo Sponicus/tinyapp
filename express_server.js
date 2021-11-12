@@ -89,7 +89,7 @@ app.get("/urls", (req, res) => {
   //     }
   //   }
   // }
-  console.log("look here --->", urlsForUser(id));
+  // console.log("look here --->", urlsForUser(id));
   const templateVariables =   {
     urls: urlsForUser(id),
     // urls: urlDatabase,
@@ -129,18 +129,23 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // DELETE URLS from database
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+  const id = users[req.cookies["user_id"]]
+  console.log(req.params.shortURL)
+  console.log(urlsForUser(id))
+  if(urlsForUser(id)){
+    delete urlDatabase[req.params.shortURL];
+  }
   res.redirect("/urls");
 });
 
 // make the changes to the edit on show url page
 app.post("/u/:shortURL/", (req, res) => {
-  const newObj = {
-    longURL: req.body.longURL,
-    userID: users[req.cookies["user_id"]].id
-  }
+  const id = users[req.cookies["user_id"]];
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL] = newObj;
+  if(urlsForUser(id)) {
+    // urlDatabase[shortURL] = r;
+    console.log(urlsForUser(id))
+  }
   res.redirect("/urls")
 });
 
@@ -251,11 +256,11 @@ const urlsForUser = (id) => {
     for (let shortURL in urlDatabase) {
       if(urlDatabase[shortURL].userID === id.id) {
         tempObj[shortURL] = urlDatabase[shortURL];
-        console.log("I am working");
+        // console.log("I am working");
       }
     }
   }
-  console.log(tempObj);
+  // console.log(tempObj);
   return tempObj;
 };
 
