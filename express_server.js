@@ -18,7 +18,12 @@ app.use(cookieSession({
 
 //////remnant from one of the first tasks from compass/////
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  const user = users[req.session.user_id];
+  // if user is not logged in, redirect to login
+  if (user === undefined) {
+    res.redirect("/login");
+  }
+  res.redirect("urls");
 });
 /////////////////////////////////////////////////////////
 app.listen(PORT, () => {
@@ -113,9 +118,6 @@ app.post("/u/:shortURL/", (req, res) => {
 //render login page
 app.get("/login", (req, res) => {
   const userID = req.session.user_id;
-  if (userID) {
-    res.redirect("/urls");
-  }
   const templateVariables = {
     user: null //users[req.session.user_id]
   };
