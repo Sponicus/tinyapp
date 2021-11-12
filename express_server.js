@@ -129,9 +129,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 // make the changes to the edit on show url page
 app.post("/u/:shortURL/", (req, res) => {
   const id = users[req.session.user_id];
-  const shortURL = req.params.shortURL;
   if(urlsForUser(id)) {
-    // Do nothing
+    const shortURL = req.params.shortURL;
+    const longURL = req.body.longURL;
+    urlDatabase[shortURL].longURL = longURL; 
   }
   res.redirect("/urls")
 });
@@ -160,7 +161,7 @@ app.post("/login", (req, res) => {
     res.redirect("/register");
     // report error for missing password or anything else!
   } else {
-    res.status(400).send('an error has occured!');
+    res.status(400).send('an unexpected error has occured!');
   }
   res.redirect("urls");
 });
@@ -199,7 +200,7 @@ app.post("/register", (req, res) => {
   users[randomID]["password"] = hashedPassword;
   // sends status message if any field is left blank
   if (email === ""||password === "") {
-    res.status(400).send("an error has occured!");
+    res.status(400).send("an error has occured! please re-enter a valid username and password!");
   } else {
     req.session.user_id = randomID;
     res.redirect("/urls");
@@ -214,12 +215,18 @@ const emailLookUp = (inputEmail) => {
   }
 };
 
+module.exports = {emailLookUp};
+
 const passwordLookUp = (inputPassword) => {
   for (let key in users) {
     if (inputPassword === users[key].password){
       return true;
     }
   }
+};
+
+const getUserByEmail = (email, database) => {
+  
 };
 
 const userLookUp = (emailLookUp,passwordLookUp) => {
