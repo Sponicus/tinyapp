@@ -10,9 +10,16 @@ app.set("view engine", "ejs"); //  Set ejs as the view engine
 
 /////////////SERVER//////////////
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b6UTxQ": {
+      longURL: "https://www.tsn.ca",
+      userID: "aJ48lW"
+  },
+  "i3BoGr": {
+      longURL: "https://www.google.ca",
+      userID: "aJ48lW"
+  }
 };
+
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -39,14 +46,19 @@ const users = {
 ////////////////////////////////
 // Post route for submission form AKA  create new short URLS
 app.post("/urls", (req, res) => {
+  const newObj = {
+    longURL: req.body.longURL,
+    userID: users[req.cookies["user_id"]].id
+  };
+
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = newObj;
   res.redirect(`/urls/${shortURL}`);       
 });
 
 // redirect POST for shortURL to longURL
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(`${longURL}`);
 });
 
@@ -62,10 +74,26 @@ app.get("/hello", (req, res) => {
 
 //Pass urlDatabase to template
 app.get("/urls", (req, res) => {
-  const templateVariables =   { 
-    urls: urlDatabase,
+  const id = users[req.cookies["user_id"]]
+  // if (users[req.cookies["user_id"]]) {
+  //   res.redirect(u)
+  // }
+  // console.log(urlDatabase)
+  // const emptyObj = {};
+  // if (users[req.cookies["user_id"]]) {
+  //   for (let shortURL in urlDatabase) {
+  //     console.log(urlDatabase[shortURL].userID, users[req.cookies["user_id"]].id);
+  //     if(urlDatabase[shortURL].userID === users[req.cookies["user_id"]].id) {
+  //       emptyObj[shortURL] = urlDatabase[shortURL];
+  //       console.log("I am working");
+  //     }
+  //   }
+  // }
+  console.log("look here --->", urlsForUser(id));
+  const templateVariables =   {
+    urls: urlsForUser(id),
+    // urls: urlDatabase,
     user: users[req.cookies["user_id"]] 
-
   }
   res.render("urls_index", templateVariables);
 });
@@ -86,30 +114,36 @@ app.get("/urls/new", (req, res) => {
 
 // Render info about single URL
 app.get("/urls/:shortURL", (req, res) => {
+  if (!users[req.cookies["user_id"]]) {
+    res.redirect("/login");
+  } else if (users[req.cookies["user_id"]].id != urlDatabase[req.params.shortURL].userID) {
+    res.status(400).send("THIS NOT YOURS TO EDIT!!! >:$");
+  }
   const templateVariables = {
     user: users[req.cookies["user_id"]] ,
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]
+    longURL: urlDatabase[req.params.shortURL].longURL
   }
   res.render("urls_show", templateVariables);
 });
 
 // DELETE URLS from database
 app.post("/urls/:shortURL/delete", (req, res) => {
-  console.log(urlDatabase[req.params.shortURL]);
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
 
 // make the changes to the edit on show url page
 app.post("/u/:shortURL/", (req, res) => {
+  const newObj = {
+    longURL: req.body.longURL,
+    userID: users[req.cookies["user_id"]].id
+  }
   const shortURL = req.params.shortURL;
-  const longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = newObj;
   res.redirect("/urls")
 });
 
-/////////might not need/////
 //render login page
 app.get("/login", (req, res) => {
   const userID = req.cookies["user_id"]
@@ -173,6 +207,8 @@ app.post("/register", (req, res) => {
   }
 });
 
+
+
 // const isLoggedIn = (input) => {
 //   for (let key in users) {
 //     if (input === users[key].id){
@@ -208,6 +244,21 @@ const userLookUp = (emailLookUp,passwordLookUp) => {
     }
   })
 };
+
+const urlsForUser = (id) => {
+  const tempObj = {};
+  if (id) {
+    for (let shortURL in urlDatabase) {
+      if(urlDatabase[shortURL].userID === id.id) {
+        tempObj[shortURL] = urlDatabase[shortURL];
+        console.log("I am working");
+      }
+    }
+  }
+  console.log(tempObj);
+  return tempObj;
+};
+
 
 // function getKeyByValue(object, value) {
 //   return Object.keys(object).find(key => object[key] === value);
