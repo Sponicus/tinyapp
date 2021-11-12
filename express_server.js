@@ -72,12 +72,13 @@ app.get("/urls", (req, res) => {
 
 // Render new template
 app.get("/urls/new", (req, res) => {
-  const userID = users[req.cookies["user_id"]].id;
+  const user = users[req.cookies["user_id"]]
+  // const userID = users[req.cookies["user_id"]].id;
   const templateVariables = {
     user: users[req.cookies["user_id"]] 
   }
   // if user is not logged in, redirect to login
-  if (isLoggedIn(userID) === false) {
+  if (user === undefined) {
     res.redirect("/login");
   }
   res.render("urls_new", templateVariables);
@@ -96,7 +97,6 @@ app.get("/urls/:shortURL", (req, res) => {
 // DELETE URLS from database
 app.post("/urls/:shortURL/delete", (req, res) => {
   console.log(urlDatabase[req.params.shortURL]);
-  // console.log(urlDatabase.params);
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
@@ -173,14 +173,15 @@ app.post("/register", (req, res) => {
   }
 });
 
-const isLoggedIn = (input) => {
-  for (let key in users) {
-    if (input === users[key].id){
-      return true;
-    }
-  }
-  return false
-};
+// const isLoggedIn = (input) => {
+//   for (let key in users) {
+//     if (input === users[key].id){
+//       return true;
+//     }
+//   }
+//   return false
+// };
+// console.log(isLoggedIn("user2RandomID"));
 
 const emailLookUp = (inputEmail) => {
   for (let key in users) {
@@ -207,8 +208,6 @@ const userLookUp = (emailLookUp,passwordLookUp) => {
     }
   })
 };
-
-// console.log(userLookUp("user2@example.com","dishwasher-funk")); 
 
 // function getKeyByValue(object, value) {
 //   return Object.keys(object).find(key => object[key] === value);
