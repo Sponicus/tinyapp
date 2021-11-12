@@ -14,7 +14,7 @@ app.set("view engine", "ejs"); //  Set ejs as the view engine
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2']
-}))
+}));
 
 //////remnant from one of the first tasks from compass/////
 app.get("/", (req, res) => {
@@ -33,7 +33,7 @@ app.post("/urls", (req, res) => {
   };
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = tempObj;
-  res.redirect(`/urls/${shortURL}`);       
+  res.redirect(`/urls/${shortURL}`);
 });
 
 // redirect POST for shortURL to longURL
@@ -54,20 +54,20 @@ app.get("/hello", (req, res) => {
 
 //Pass urlDatabase to template
 app.get("/urls", (req, res) => {
-  const id = users[req.session.user_id]
+  const id = users[req.session.user_id];
   const templateVariables =   {
     urls: urlsForUser(id),
-    user: users[req.session.user_id] 
-  }
+    user: users[req.session.user_id]
+  };
   res.render("urls_index", templateVariables);
 });
 
 // Render new template
 app.get("/urls/new", (req, res) => {
-  const user = users[req.session.user_id]
+  const user = users[req.session.user_id];
   const templateVariables = {
     user: users[req.session.user_id]
-  }
+  };
   // if user is not logged in, redirect to login
   if (user === undefined) {
     res.redirect("/login");
@@ -79,21 +79,21 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   if (!users[req.session.user_id]) {
     res.redirect("/login");
-  } else if (users[req.session.user_id].id != urlDatabase[req.params.shortURL].userID) {
+  } else if (users[req.session.user_id].id !== urlDatabase[req.params.shortURL].userID) {
     res.status(400).send("THIS NOT YOURS TO EDIT!!! >:$");
   }
   const templateVariables = {
     user: users[req.session.user_id] ,
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL
-  }
+  };
   res.render("urls_show", templateVariables);
 });
 
 // DELETE URLS from database
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const id = users[req.session.user_id]
-  if(urlsForUser(id)){
+  const id = users[req.session.user_id];
+  if (urlsForUser(id)) {
     delete urlDatabase[req.params.shortURL];
   }
   res.redirect("/urls");
@@ -102,27 +102,30 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 // make the changes to the edit on show url page
 app.post("/u/:shortURL/", (req, res) => {
   const id = users[req.session.user_id];
-  if(urlsForUser(id)) {
+  if (urlsForUser(id)) {
     const shortURL = req.params.shortURL;
     const longURL = req.body.longURL;
-    urlDatabase[shortURL].longURL = longURL; 
+    urlDatabase[shortURL].longURL = longURL;
   }
-  res.redirect("/urls")
+  res.redirect("/urls");
 });
 
 //render login page
 app.get("/login", (req, res) => {
-  const userID = req.session.user_id
-  const templateVariables = {
-    user: null //users[req.session.user_id] 
+  const userID = req.session.user_id;
+  if (userID) {
+    res.redirect("/urls");
   }
-  res.render("urls_login", templateVariables );
+  const templateVariables = {
+    user: null //users[req.session.user_id]
+  };
+  res.render("urls_login", templateVariables);
 });
 
 // endpoint for /login
 app.post("/login", (req, res) => {
   const email = req.body.email;
-  const password = req.body.password
+  const password = req.body.password;
   const hashedPassword = bcrypt.hash(password, 10, (err, hash) => {
     bcrypt.compare(password, hash, (err, result) => {});
   });
@@ -132,7 +135,7 @@ app.post("/login", (req, res) => {
     //if not go register
   } else if (!emailLookUp(email, users)) {
     res.redirect("/register");
-    return
+    return;
     // report error for missing password or anything else!
   } else {
     res.status(400).send('an unexpected error has occured!');
@@ -150,8 +153,8 @@ app.post("/logout", (req, res) => {
 // render registration page
 app.get("/register", (req, res) => {
   const templateVariables = {
-    user: users[req.session.user_id] 
-  }
+    user: users[req.session.user_id]
+  };
   res.render('urls_register', templateVariables);
 });
 
@@ -164,16 +167,16 @@ app.post("/register", (req, res) => {
     bcrypt.compare(password, hash, (err, result) => {});
   });
   // loops through users to check if email is already in use
-  if(emailLookUp(email)) {
-    res.status(400).send('email already in use')
-  };
+  if (emailLookUp(email)) {
+    res.status(400).send('email already in use');
+  }
   //assigns attributes to the following user
   users[randomID] = {};
   users[randomID]['id'] = randomID;
   users[randomID]["email"] = email;
   users[randomID]["password"] = hashedPassword;
   // sends status message if any field is left blank
-  if (email === ""||password === "") {
+  if (email === "" || password === "") {
     res.status(400).send("an error has occured! please re-enter a valid username and password!");
   } else {
     req.session.user_id = randomID;
