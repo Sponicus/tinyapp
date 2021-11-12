@@ -6,8 +6,8 @@ const bodyParser = require("body-parser");//add body parser so it is readable fo
 const cookieParser = require('cookie-parser');// add.session.user_idieSession = require("cookie-session");
 const bcrypt = require('bcryptjs');
 const cookieSession = require("cookie-session");
+const {urlDatabase, emailLookUp, users, generateRandomString, urlsForUser, userLookUp, passwordLookUp} = require("./helper");
 // const password = "purple-monkey-dinosaur"; // found in the req.params object
-
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.set("view engine", "ejs"); //  Set ejs as the view engine
@@ -17,16 +17,16 @@ app.use(cookieSession({
 }))
 
 /////////////SERVER//////////////
-const urlDatabase = {
-  "b6UTxQ": {
-      longURL: "https://www.tsn.ca",
-      userID: "aJ48lW"
-  },
-  "i3BoGr": {
-      longURL: "https://www.google.ca",
-      userID: "aJ48lW"
-  }
-};
+// const urlDatabase = {
+//   "b6UTxQ": {
+//       longURL: "https://www.tsn.ca",
+//       userID: "aJ48lW"
+//   },
+//   "i3BoGr": {
+//       longURL: "https://www.google.ca",
+//       userID: "aJ48lW"
+//   }
+// };
 
 
 app.get("/", (req, res) => {
@@ -38,18 +38,18 @@ app.listen(PORT, () => {
 });
 ////////////////Object to Store userdata///////////////
 
-const users = { 
-  "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
-  },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
-    password: "dishwasher-funk"
-  }
-};
+// const users = { 
+//   "userRandomID": {
+//     id: "userRandomID", 
+//     email: "user@example.com", 
+//     password: "purple-monkey-dinosaur"
+//   },
+//  "user2RandomID": {
+//     id: "user2RandomID", 
+//     email: "user2@example.com", 
+//     password: "dishwasher-funk"
+//   }
+// };
 
 ////////////////////////////////
 // Post route for submission form AKA  create new short URLS
@@ -154,11 +154,12 @@ app.post("/login", (req, res) => {
     bcrypt.compare(password, hash, (err, result) => {});
   });
   //check email and passwords in database
-  if (emailLookUp(email) && passwordLookUp(hashedPassword)) {
-    req.session.user_id = userLookUp(email,hashedPassword);
+  if (emailLookUp(email, users) && passwordLookUp(hashedPassword, users)) {
+    req.session.user_id = userLookUp(email, hashedPassword, users);
     //if not go register
-  } else if (!emailLookUp(email)) {
+  } else if (!emailLookUp(email, users)) {
     res.redirect("/register");
+    return
     // report error for missing password or anything else!
   } else {
     res.status(400).send('an unexpected error has occured!');
@@ -207,61 +208,65 @@ app.post("/register", (req, res) => {
   }
 });
 
-const emailLookUp = (inputEmail) => {
-  for (let key in users) {
-    if (inputEmail === users[key].email){
-      return true;
-    }
-  }
-};
+// const emailLookUp = (inputEmail) => {
+//   for (let key in users) {
+//     if (inputEmail === users[key].email){
+//       return true;
+//     }
+//   }
+// };
 
-module.exports = {emailLookUp};
 
-const passwordLookUp = (inputPassword) => {
-  for (let key in users) {
-    if (inputPassword === users[key].password){
-      return true;
-    }
-  }
-};
+// const passwordLookUp = (inputPassword) => {
+//   for (let key in users) {
+//     if (inputPassword === users[key].password){
+//       return true;
+//     }
+//   }
+// };
 
-const getUserByEmail = (email, database) => {
+// const getUserByEmail = (email, database) => {
   
-};
+// };
 
-const userLookUp = (emailLookUp,passwordLookUp) => {
-  return Object.keys(users).find((user) => {
-    if(users[user].email != emailLookUp || users[user].password != passwordLookUp) {
-      return false;
-    } else {
-      return true;
-    }
-  })
-};
 
-const urlsForUser = (id) => {
-  const tempObj = {};
-  if (id) {
-    for (let shortURL in urlDatabase) {
-      if(urlDatabase[shortURL].userID === id.id) {
-        tempObj[shortURL] = urlDatabase[shortURL];
-      }
-    }
-  }
-  return tempObj;
-};
+// email look take 2 params. 
+//paswrod takes 2params
+// email && passlookup.
+
+// const userLookUp = (emailLookUp,passwordLookUp) => {
+//   return Object.keys(users).find((user) => {
+//     if(users[user].email != emailLookUp || users[user].password != passwordLookUp) {
+//       return false;
+//     } else {
+//       return true;
+//     }
+//   })
+// };
+
+// const urlsForUser = (id) => {
+//   const tempObj = {};
+//   if (id) {
+//     for (let shortURL in urlDatabase) {
+//       if(urlDatabase[shortURL].userID === id.id) {
+//         tempObj[shortURL] = urlDatabase[shortURL];
+//       }
+//     }
+//   }
+//   return tempObj;
+// };
 
 
 // function getKeyByValue(object, value) {
 //   return Object.keys(object).find(key => object[key] === value);
 // }
 
-const generateRandomString = () => {
-  let randomString = '';
-  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghejklmnopqrstuvwxyz1234567890';
-  //// result 6 random characters. 
-  for (let i = 0; i < 6; i++) {
-    randomString += characters.charAt(Math.floor(Math.random()*characters.length));
-  }
-  return randomString;
-};
+// const generateRandomString = () => {
+//   let randomString = '';
+//   let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghejklmnopqrstuvwxyz1234567890';
+//   //// result 6 random characters. 
+//   for (let i = 0; i < 6; i++) {
+//     randomString += characters.charAt(Math.floor(Math.random()*characters.length));
+//   }
+//   return randomString;
+// };
