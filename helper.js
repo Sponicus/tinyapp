@@ -63,8 +63,8 @@ const urlsForUser = (id) => {
   const tempObj = {};
   if (id) {
     for (let shortURL in urlDatabase) {
-      if (urlDatabase[shortURL].userID === id.id) {
-        tempObj[shortURL] = urlDatabase[shortURL];
+      if (urlDatabase[shortURL].userID === id) {
+        tempObj[shortURL] = urlDatabase[shortURL]["longURL"];
       }
     }
   }

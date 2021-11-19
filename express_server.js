@@ -59,12 +59,16 @@ app.get("/hello", (req, res) => {
 
 //Pass urlDatabase to template
 app.get("/urls", (req, res) => {
-  const id = users[req.session.user_id];
-  const templateVariables =   {
-    urls: urlsForUser(id),
-    user: users[req.session.user_id]
-  };
-  res.render("urls_index", templateVariables);
+  if(req.session.user_id) {
+    const id = req.session.user_id;
+    const templateVariables =   {
+      urls: urlsForUser(id),
+      user: users[req.session.user_id]
+    };
+    res.render("urls_index", templateVariables);
+  } else {
+    res.send(`<html><body>Please go log in  </body><a href="/login">Login</a></html>\n`);
+  }
 });
 
 // Render new template
@@ -82,31 +86,40 @@ app.get("/urls/new", (req, res) => {
 
 // Render info about single URL
 app.get("/urls/:shortURL", (req, res) => {
-  if (!users[req.session.user_id]) {
-    res.redirect("/login");
-  } else if (users[req.session.user_id].id !== urlDatabase[req.params.shortURL].userID) {
+  if(!Object.keys(urlDatabase).includes(req.params.shortURL)) {
+    res.send(`<html><body>This URL does not exist! </body><a href="/login">Login</a></html>\n`);
+  } else if (!req.session.user_id) {
+    res.send(`<html><body>You do not have permission to view this URL  </body><a href="/login">Login</a></html>\n`);
+  } else if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
     res.status(400).send("THIS NOT YOURS TO EDIT!!! >:$");
+  } else {
+    const templateVariables = {
+      user: users[req.session.user_id] ,
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL].longURL
+    };
+    res.render("urls_show", templateVariables);
   }
-  const templateVariables = {
-    user: users[req.session.user_id] ,
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL
-  };
-  res.render("urls_show", templateVariables);
 });
 
 // DELETE URLS from database
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const id = users[req.session.user_id];
+  const id = req.session.user_id;
   if (urlsForUser(id)) {
-    delete urlDatabase[req.params.shortURL];
+    // console.log("this is what we are looking for -->>>", urlsForUser(id));
+    let userUrls = urlsForUser(id);
+    if (Object.keys(userUrls).includes(req.params.shortURL) ) {
+      delete urlDatabase[req.params.shortURL];
+      res.redirect("/urls");
+    } else {
+      res.status(400).send("You do not have permission to delete this");
+    }
   }
-  res.redirect("/urls");
 });
 
 // make the changes to the edit on show url page
 app.post("/u/:shortURL/", (req, res) => {
-  const id = users[req.session.user_id];
+  const id = req.session.user_id;
   if (urlsForUser(id)) {
     const shortURL = req.params.shortURL;
     const longURL = req.body.longURL;
