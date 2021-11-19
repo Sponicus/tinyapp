@@ -162,7 +162,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   req.session = null;
   // res.clearSession('user_id');
-  res.redirect("/urls");
+  res.redirect("/");
 });
 
 // render registration page
