@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");//add body parser so it is readable fo
 const cookieParser = require('cookie-parser');// add.session.user_idieSession = require("cookie-session");
 const bcrypt = require('bcryptjs');
 const cookieSession = require("cookie-session");
-const {urlDatabase, emailLookUp, users, generateRandomString, urlsForUser, userLookUp, passwordLookUp} = require("./helper");
+const {urlDatabase, emailLookUp, users, generateRandomString, urlsForUser, userLookUp, passwordLookUp, getUserByEmail} = require("./helper");
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -141,21 +141,19 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const hashedPassword = bcrypt.hash(password, 10, (err, hash) => {
-    bcrypt.compare(password, hash, (err, result) => {});
-  });
-  //check email and passwords in database
-  if (emailLookUp(email, users) && passwordLookUp(hashedPassword, users)) {
-    req.session.user_id = userLookUp(email, hashedPassword, users);
-    //if not go register
-  } else if (!emailLookUp(email, users)) {
-    res.redirect("/register");
+  const userId = getUserByEmail(email, users);
+  if ( !userId ) {
+    res.send('Email doesn\'t exist! Please go register :D');
     return;
+    //if not go register
+  } else if (!bcrypt.compareSync(password, users[userId].password))  {
+    res.send('Incorrect username or password');
     // report error for missing password or anything else!
-  } else {
-    res.status(400).send('an unexpected error has occured!');
-  }
+  } else if (bcrypt.compareSync(password, users[userId].password)) {
+    req.session.user_id = userId;
   res.redirect("urls");
+  }
+  res.status(400).send('an unexpected error has occured!');
 });
 
 // endpoint for /logout
@@ -178,11 +176,10 @@ app.post("/register", (req, res) => {
   const randomID = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
-  const hashedPassword = bcrypt.hash(password, 10, (err, hash) => {
-    bcrypt.compare(password, hash, (err, result) => {});
-  });
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  
   // loops through users to check if email is already in use
-  if (emailLookUp(email)) {
+  if (emailLookUp(email, users)) {
     res.status(400).send('email already in use');
   }
   //assigns attributes to the following user
